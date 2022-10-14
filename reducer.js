@@ -8,7 +8,6 @@ export default function reducer(state = init, action ,args){
             return state
         case 'ADD' :
             state.cars = [...state.cars,args[0]]
-            console.log(state)
             return state
         default :
             return state
