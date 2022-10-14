@@ -1,5 +1,4 @@
 export default function html([first,...strings],...values){
-    console.log(strings);
     return values.reduce(
         (acc,cur)=>acc.concat(cur,strings.shift()),
         [first]
@@ -11,6 +10,7 @@ export function createStore(reducer){
     const roots  = new Map() // contains object have component to render to view {element : function ,.....}
     function render(){
         for ( const [root,component] of roots){
+            console.log(component)
             const output = component()
             root.innerHTML = output
         }
@@ -20,9 +20,25 @@ export function createStore(reducer){
             roots.set(root,component)
             render()
         },
-        connect(selector = state => state){
-            return component => (props, ...args) =>
-            component(Object.assign({},props,selector(state))) // obj = {props : selector(state)} 
+        /*
+         function connect(selector) {
+            return function(component) {
+                return function(props,...args){
+                    var object = {...pros,selector(state),...args}
+                    return component(object)
+                }
+            }
+         }
+        */
+        connect(selector = (state) => state){
+            return component => (props, ...args) =>{
+            return component(Object.assign({},props,selector(state),...args)) }
+            // obj = {...pros,...state,...args}; component(obj); 
+        },
+        dispatch(action,...args){
+            state = reducer(state,action,args)
+            render()
         }
+
     }
 }
